@@ -10,8 +10,10 @@ use App\Models\AeatFiscalDataFile;
 use App\Models\AeatFiscalDataRequest;
 use App\Services\Aeat\AeatFiscalDataManager;
 use App\Services\Aeat\AeatIntegrationException;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Throwable;
@@ -21,9 +23,7 @@ class AeatFiscalDataController extends Controller
     /**
      * Create a new controller instance.
      */
-    public function __construct(protected AeatFiscalDataManager $manager)
-    {
-    }
+    public function __construct(protected AeatFiscalDataManager $manager) {}
 
     /**
      * Display the private AEAT fiscal-data module.
@@ -32,29 +32,7 @@ class AeatFiscalDataController extends Controller
     {
         $user = $request->user();
         $profiles = $user->aeatCertificateProfiles()->orderBy('name')->get();
-        $requests = $user->aeatFiscalDataRequests()
-            ->with([
-                'certificateProfile:id,name',
-                'precheckCertificateProfile:id,name',
-                'files' => fn ($query) => $query->latest(),
-                'errors' => fn ($query) => $query->latest()->limit(5),
-            ])
-            ->withCount(['records', 'errors'])
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
-
-        $selectedRequest = null;
-        $selectedRequestId = $request->integer('request');
-        if ($selectedRequestId) {
-            $selectedRequest = $user->aeatFiscalDataRequests()
-                ->with([
-                    'files' => fn ($query) => $query->latest(),
-                    'errors' => fn ($query) => $query->latest()->limit(10),
-                ])
-                ->withCount(['records', 'errors'])
-                ->find($selectedRequestId);
-        }
+        $requestPanelData = $this->requestPanelViewData($request);
 
         $summary = [
             'total' => $user->aeatFiscalDataRequests()->count(),
@@ -68,25 +46,21 @@ class AeatFiscalDataController extends Controller
             ->latest()
             ->get();
 
-        $recordBreakdown = collect();
-        if ($selectedRequest) {
-            $recordBreakdown = $selectedRequest->records()
-                ->selectRaw('record_code, count(*) as total')
-                ->groupBy('record_code')
-                ->orderByRaw('count(*) desc')
-                ->limit(12)
-                ->get();
-        }
-
         return view('aeat.fiscal-data.index', [
             'certificateProfiles' => $profiles,
-            'requests' => $requests,
-            'selectedRequest' => $selectedRequest,
             'summary' => $summary,
             'pendingPinRequests' => $pendingPinRequests,
-            'recordBreakdown' => $recordBreakdown,
             'ratificationUrls' => config('aeat.urls.ratification', []),
+            ...$requestPanelData,
         ]);
+    }
+
+    /**
+     * Render only the request panels so the page can refresh them without a full reload.
+     */
+    public function requestPanels(Request $request): View
+    {
+        return view('aeat.fiscal-data.partials.request-panels', $this->requestPanelViewData($request));
     }
 
     /**
@@ -172,6 +146,79 @@ class AeatFiscalDataController extends Controller
     }
 
     /**
+     * Build the data used by the request history and detail panels.
+     *
+     * @return array{
+     *     requests: LengthAwarePaginator<int, AeatFiscalDataRequest>,
+     *     selectedRequest: AeatFiscalDataRequest|null,
+     *     selectedRequestId: int|null,
+     *     recordBreakdown: Collection<int, mixed>,
+     *     hasActiveRequests: bool
+     * }
+     */
+    protected function requestPanelViewData(Request $request): array
+    {
+        $user = $request->user();
+        $activeStatuses = ['queued', 'processing', 'retrying', 'awaiting_pin', 'preparing'];
+
+        $requests = $user->aeatFiscalDataRequests()
+            ->with([
+                'files' => fn ($query) => $query->latest(),
+                'errors' => fn ($query) => $query->latest()->limit(5),
+            ])
+            ->withCount(['records', 'errors'])
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        $requests->withPath(route('aeat.fiscal-data.index'));
+
+        $selectedRequestId = $request->integer('request') ?: null;
+        $selectedRequest = null;
+
+        if ($selectedRequestId) {
+            $selectedRequest = $user->aeatFiscalDataRequests()
+                ->with([
+                    'files' => fn ($query) => $query->latest(),
+                    'errors' => fn ($query) => $query->latest()->limit(10),
+                ])
+                ->withCount(['records', 'errors'])
+                ->find($selectedRequestId);
+        }
+
+        if (! $selectedRequest) {
+            $selectedRequestId = null;
+        }
+
+        $recordBreakdown = collect();
+
+        if ($selectedRequest) {
+            $recordBreakdown = $selectedRequest->records()
+                ->selectRaw('record_code, count(*) as total')
+                ->groupBy('record_code')
+                ->orderByRaw('count(*) desc')
+                ->limit(12)
+                ->get();
+        }
+
+        $hasActiveRequests = $requests->getCollection()->contains(
+            fn (AeatFiscalDataRequest $aeatRequest): bool => in_array($aeatRequest->status, $activeStatuses, true)
+        );
+
+        if ($selectedRequest && in_array($selectedRequest->status, $activeStatuses, true)) {
+            $hasActiveRequests = true;
+        }
+
+        return [
+            'requests' => $requests,
+            'selectedRequest' => $selectedRequest,
+            'selectedRequestId' => $selectedRequestId,
+            'recordBreakdown' => $recordBreakdown,
+            'hasActiveRequests' => $hasActiveRequests,
+        ];
+    }
+
+    /**
      * Map internal exceptions to user-facing feedback.
      */
     protected function friendlyErrorMessage(Throwable $throwable): string
@@ -185,4 +232,3 @@ class AeatFiscalDataController extends Controller
         return 'The AEAT request could not be started due to an unexpected error.';
     }
 }
-

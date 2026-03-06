@@ -152,6 +152,226 @@
                     .request-detail-column {
                         scroll-margin-top: 2rem;
                     }
+
+                    .aeat-request-actions {
+                        align-items: center;
+                    }
+
+                    .aeat-request-view-btn {
+                        min-width: 6.4rem;
+                        padding: 0.68rem 1.15rem;
+                        border-radius: 999px;
+                        font-weight: 700;
+                        letter-spacing: 0.01em;
+                        transition:
+                            transform 0.2s ease,
+                            box-shadow 0.2s ease,
+                            background 0.2s ease,
+                            border-color 0.2s ease,
+                            color 0.2s ease;
+                    }
+
+                    .aeat-request-view-btn:hover,
+                    .aeat-request-view-btn:focus {
+                        transform: translateY(-1px);
+                    }
+
+                    .aeat-request-view-btn--idle {
+                        color: var(--brand-ink);
+                        border-color: rgba(24, 63, 71, 0.12);
+                        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 248, 247, 0.96));
+                        box-shadow: 0 10px 22px rgba(24, 63, 71, 0.08);
+                    }
+
+                    .aeat-request-view-btn--idle:hover,
+                    .aeat-request-view-btn--idle:focus {
+                        color: var(--brand-ink);
+                        border-color: rgba(88, 199, 194, 0.45);
+                        background: linear-gradient(135deg, rgba(217, 244, 241, 0.9), rgba(255, 255, 255, 0.98));
+                        box-shadow: 0 14px 28px rgba(24, 63, 71, 0.1);
+                    }
+
+                    .aeat-request-view-btn--active {
+                        color: #fff;
+                        border-color: transparent;
+                        background: linear-gradient(135deg, var(--brand-teal), #2ea8a1);
+                        box-shadow: 0 16px 30px rgba(88, 199, 194, 0.28);
+                    }
+
+                    .aeat-request-view-btn--active:hover,
+                    .aeat-request-view-btn--active:focus {
+                        color: #fff;
+                        border-color: transparent;
+                        background: linear-gradient(135deg, #47b8b3, var(--brand-ink));
+                        box-shadow: 0 18px 34px rgba(24, 63, 71, 0.2);
+                    }
+
+                    .aeat-request-retry-btn {
+                        min-width: 5.75rem;
+                        padding: 0.58rem 1rem;
+                        border-radius: 999px;
+                        font-weight: 700;
+                        letter-spacing: 0.01em;
+                        color: #c0392b;
+                        border-color: rgba(231, 76, 60, 0.34);
+                        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 237, 235, 0.96));
+                        box-shadow: 0 10px 22px rgba(192, 57, 43, 0.08);
+                        transition:
+                            transform 0.2s ease,
+                            box-shadow 0.2s ease,
+                            background 0.2s ease,
+                            border-color 0.2s ease,
+                            color 0.2s ease;
+                    }
+
+                    .aeat-request-retry-btn:hover,
+                    .aeat-request-retry-btn:focus {
+                        transform: translateY(-1px);
+                        color: #fff;
+                        border-color: transparent;
+                        background: linear-gradient(135deg, #ef6b5a, #c0392b);
+                        box-shadow: 0 16px 30px rgba(192, 57, 43, 0.22);
+                    }
+
+                    .aeat-request-live-meta {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 0.45rem;
+                        margin-top: 0.75rem;
+                    }
+
+                    .aeat-request-live-pill {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 0.35rem;
+                        padding: 0.32rem 0.7rem;
+                        border-radius: 999px;
+                        font-size: 0.76rem;
+                        font-weight: 700;
+                        letter-spacing: 0.03em;
+                        line-height: 1;
+                        white-space: nowrap;
+                    }
+
+                    .aeat-request-live-pill--neutral {
+                        color: var(--brand-ink);
+                        background: rgba(24, 63, 71, 0.08);
+                    }
+
+                    .aeat-request-live-pill--queued {
+                        color: #fff;
+                        background: linear-gradient(135deg, #5b6cf9, #4355dc);
+                        box-shadow: 0 10px 18px rgba(67, 85, 220, 0.18);
+                    }
+
+                    .aeat-request-live-pill--processing {
+                        color: #fff;
+                        background: linear-gradient(135deg, #20a4a8, #167d88);
+                        box-shadow: 0 10px 18px rgba(22, 125, 136, 0.18);
+                    }
+
+                    .aeat-request-live-pill--retrying {
+                        color: #6b4d00;
+                        background: linear-gradient(135deg, rgba(255, 214, 102, 0.96), rgba(255, 239, 196, 0.94));
+                        box-shadow: 0 10px 18px rgba(235, 168, 77, 0.18);
+                    }
+
+                    .aeat-request-live-pill--awaiting {
+                        color: #7a4a00;
+                        background: linear-gradient(135deg, rgba(255, 212, 128, 0.96), rgba(255, 244, 214, 0.95));
+                    }
+
+                    .aeat-request-live-pill--done {
+                        color: #0f6b4e;
+                        background: linear-gradient(135deg, rgba(180, 244, 214, 0.96), rgba(240, 255, 248, 0.95));
+                    }
+
+                    .aeat-request-live-pill--failed {
+                        color: #a1281d;
+                        background: linear-gradient(135deg, rgba(255, 204, 199, 0.98), rgba(255, 244, 243, 0.95));
+                    }
+
+                    .aeat-request-signal {
+                        display: grid;
+                        gap: 0.9rem;
+                        margin-bottom: 1.15rem;
+                        padding: 1rem 1.05rem;
+                        border: 1px solid rgba(24, 63, 71, 0.1);
+                        border-radius: 1.25rem;
+                        background: linear-gradient(135deg, rgba(88, 199, 194, 0.12), rgba(255, 255, 255, 0.96));
+                    }
+
+                    .aeat-request-signal__grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                        gap: 0.75rem;
+                    }
+
+                    .aeat-request-signal__item {
+                        min-width: 0;
+                        padding: 0.7rem 0.8rem;
+                        border-radius: 1rem;
+                        background: rgba(255, 255, 255, 0.8);
+                        border: 1px solid rgba(24, 63, 71, 0.08);
+                    }
+
+                    .aeat-request-signal__label {
+                        margin-bottom: 0.25rem;
+                        color: var(--brand-slate);
+                        font-size: 0.72rem;
+                        font-weight: 700;
+                        letter-spacing: 0.12em;
+                        text-transform: uppercase;
+                    }
+
+                    .aeat-request-signal__value {
+                        color: var(--brand-ink);
+                        font-size: 1rem;
+                        font-weight: 700;
+                    }
+
+                    .aeat-error-card {
+                        overflow: hidden;
+                        background: rgba(255, 255, 255, 0.88);
+                    }
+
+                    .aeat-error-card__content {
+                        flex: 1 1 auto;
+                        min-width: 0;
+                    }
+
+                    .aeat-error-card__meta {
+                        flex: 0 0 auto;
+                        min-width: 5.5rem;
+                    }
+
+                    .aeat-error-card__details {
+                        max-width: 100%;
+                        overflow: auto;
+                    }
+
+                    .aeat-break-anywhere {
+                        overflow-wrap: anywhere;
+                        word-break: break-word;
+                    }
+
+                    @media (max-width: 575.98px) {
+                        .aeat-request-view-btn,
+                        .aeat-request-retry-btn {
+                            min-width: 5.5rem;
+                            padding-inline: 1rem;
+                        }
+
+                        .aeat-error-card__meta {
+                            min-width: 0;
+                        }
+                    }
+
+                    @media (max-width: 767.98px) {
+                        .aeat-request-signal__grid {
+                            grid-template-columns: 1fr;
+                        }
+                    }
                 </style>
             @endonce
 
@@ -315,223 +535,34 @@
                 </div>
             @endif
 
-            <div class="row g-4 align-items-start">
-                <div class="col-xl-8">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white border-0 pb-0">
-                            <h3 class="h5 mb-1">Request History</h3>
-                            <p class="text-muted small mb-0">Every request keeps status, errors, retry attempts, and downloadable raw files in the private area.</p>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Request</th>
-                                            <th>Method</th>
-                                            <th>Status</th>
-                                            <th>Artifacts</th>
-                                            <th class="text-end">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($requests as $aeatRequest)
-                                            @php
-                                                $latestFile = $aeatRequest->files->first();
-                                                $statusClass = match ($aeatRequest->status) {
-                                                    'completed' => 'success',
-                                                    'failed' => 'danger',
-                                                    'awaiting_pin' => 'warning',
-                                                    'processing', 'queued', 'retrying', 'preparing' => 'primary',
-                                                    default => 'secondary',
-                                                };
-                                                $domicileClass = match ($aeatRequest->domicile_status) {
-                                                    'ratified' => 'success',
-                                                    'not_ratified' => 'danger',
-                                                    default => 'secondary',
-                                                };
-                                            @endphp
-                                            <tr @class(['table-active' => (int) request('request') === $aeatRequest->id])>
-                                                <td>
-                                                    <div class="fw-semibold">#{{ $aeatRequest->id }} · {{ $aeatRequest->taxpayer_nif }}</div>
-                                                    <div class="text-muted small">{{ $aeatRequest->created_at?->format('d/m/Y H:i') }} · pdp={{ $aeatRequest->pdp ? 'S' : 'N' }}</div>
-                                                    @if ($aeatRequest->auth_nif)
-                                                        <div class="text-muted small">Authenticated as {{ $aeatRequest->auth_nif }}</div>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="fw-semibold text-capitalize">{{ str_replace('_', ' ', $aeatRequest->auth_method) }}</div>
-                                                    <div class="text-muted small">Attempts: {{ $aeatRequest->attempts }}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex flex-wrap gap-2">
-                                                        <span class="badge text-bg-{{ $statusClass }}">{{ str_replace('_', ' ', $aeatRequest->status) }}</span>
-                                                        <span class="badge text-bg-{{ $domicileClass }}">{{ str_replace('_', ' ', $aeatRequest->domicile_status) }}</span>
-                                                    </div>
-                                                    <div class="text-muted small mt-2">Stage: {{ $aeatRequest->stage ?: 'n/a' }}</div>
-                                                    @if ($aeatRequest->last_error_message)
-                                                        <div class="text-danger small mt-1">{{ $aeatRequest->last_error_message }}</div>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="small text-muted">Files: {{ $aeatRequest->files->count() }}</div>
-                                                    <div class="small text-muted">Records: {{ $aeatRequest->records_count }}</div>
-                                                    <div class="small text-muted">Errors: {{ $aeatRequest->errors_count }}</div>
-                                                </td>
-                                                <td class="text-end">
-                                                    <div class="d-flex justify-content-end gap-2 flex-wrap">
-                                                        <a href="{{ route('aeat.fiscal-data.index', ['request' => $aeatRequest->id]) }}#request-detail-panel" class="btn btn-sm btn-outline-brand">View</a>
-                                                        @if ($latestFile)
-                                                            <a href="{{ route('aeat.fiscal-data.files.download', $latestFile) }}" class="btn btn-sm btn-outline-secondary">Raw file</a>
-                                                        @endif
-                                                        @if ($aeatRequest->canRetry())
-                                                            <form method="POST" action="{{ route('aeat.fiscal-data.requests.retry', $aeatRequest) }}">
-                                                                @csrf
-                                                                <button type="submit" class="btn btn-sm btn-outline-danger">Retry</button>
-                                                            </form>
-                                                        @endif
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="5" class="text-muted small">No AEAT requests have been created yet.</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            @if ($requests->hasPages())
-                                <div class="mt-4">{{ $requests->links() }}</div>
-                            @endif
-                        </div>
+            <div
+                x-data="aeatRequestHistory({
+                    endpoint: @js(route('aeat.fiscal-data.request-panels')),
+                    selectedRequestId: @js($selectedRequestId),
+                    pollInterval: 5000,
+                })"
+                x-init="init()"
+                class="d-flex flex-column gap-3"
+            >
+                <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                    <p class="small text-muted mb-0">The history and detail panels refresh automatically so status, domicile checks, and errors stay in sync while AEAT requests are moving.</p>
+                    <div class="d-inline-flex align-items-center gap-2 small">
+                        <span class="badge rounded-pill border" :class="hasActiveRequests ? 'text-bg-success border-success-subtle' : 'text-bg-light text-muted'">
+                            <span x-show="isRefreshing" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            <span x-text="hasActiveRequests ? (isRefreshing ? 'Refreshing' : 'Auto-refresh on') : 'Auto-refresh paused'"></span>
+                        </span>
+                        <span class="text-muted" x-text="lastSyncedLabel"></span>
                     </div>
                 </div>
 
-                <div class="col-xl-4 request-detail-column" id="request-detail-panel">
-                    @if ($selectedRequest)
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-white border-0 pb-0">
-                                <h3 class="h5 mb-1">Request Detail</h3>
-                                <p class="text-muted small mb-0">Request #{{ $selectedRequest->id }} for {{ $selectedRequest->taxpayer_nif }}</p>
-                            </div>
-                            <div class="card-body">
-                                <dl class="row mb-0 small">
-                                    <dt class="col-5 text-muted">Auth method</dt>
-                                    <dd class="col-7 text-capitalize">{{ str_replace('_', ' ', $selectedRequest->auth_method) }}</dd>
-                                    <dt class="col-5 text-muted">pdp</dt>
-                                    <dd class="col-7">{{ $selectedRequest->pdp ? 'S' : 'N' }}</dd>
-                                    <dt class="col-5 text-muted">Status</dt>
-                                    <dd class="col-7">{{ str_replace('_', ' ', $selectedRequest->status) }}</dd>
-                                    <dt class="col-5 text-muted">Stage</dt>
-                                    <dd class="col-7">{{ $selectedRequest->stage ?: 'n/a' }}</dd>
-                                    <dt class="col-5 text-muted">Domicile</dt>
-                                    <dd class="col-7">{{ str_replace('_', ' ', $selectedRequest->domicile_status) }}</dd>
-                                    <dt class="col-5 text-muted">Queued at</dt>
-                                    <dd class="col-7">{{ $selectedRequest->queued_at?->format('d/m/Y H:i:s') ?: 'n/a' }}</dd>
-                                    <dt class="col-5 text-muted">Downloaded at</dt>
-                                    <dd class="col-7">{{ $selectedRequest->downloaded_at?->format('d/m/Y H:i:s') ?: 'n/a' }}</dd>
-                                    <dt class="col-5 text-muted">Completed at</dt>
-                                    <dd class="col-7">{{ $selectedRequest->completed_at?->format('d/m/Y H:i:s') ?: 'n/a' }}</dd>
-                                </dl>
-
-                                @if ($selectedRequest->payload)
-                                    <hr>
-                                    <div class="fw-semibold mb-2">Safe request payload</div>
-                                    <pre class="small bg-light border rounded-3 p-3 mb-0">{{ json_encode($selectedRequest->payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-white border-0 pb-0">
-                                <h3 class="h5 mb-1">Files and Records</h3>
-                                <p class="text-muted small mb-0">Raw AEAT files stay private; parsed records are normalized and queryable.</p>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex flex-column gap-3">
-                                    @forelse ($selectedRequest->files as $file)
-                                        <div class="border rounded-4 p-3">
-                                            <div class="d-flex justify-content-between align-items-start gap-3">
-                                                <div>
-                                                    <div class="fw-semibold">{{ $file->filename }}</div>
-                                                    <div class="text-muted small">{{ number_format($file->bytes) }} bytes · {{ $file->line_count }} lines · {{ $file->record_count }} records</div>
-                                                </div>
-                                                <a href="{{ route('aeat.fiscal-data.files.download', $file) }}" class="btn btn-sm btn-outline-secondary">Download</a>
-                                            </div>
-                                        </div>
-                                    @empty
-                                        <div class="text-muted small">No raw AEAT file has been stored for this request yet.</div>
-                                    @endforelse
-                                </div>
-
-                                @if ($recordBreakdown->isNotEmpty())
-                                    <hr>
-                                    <div class="fw-semibold mb-2">Top record codes</div>
-                                    <div class="table-responsive">
-                                        <table class="table table-sm mb-0 align-middle">
-                                            <thead>
-                                                <tr>
-                                                    <th>Record code</th>
-                                                    <th class="text-end">Count</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($recordBreakdown as $recordRow)
-                                                    <tr>
-                                                        <td>{{ $recordRow->record_code ?: 'n/a' }}</td>
-                                                        <td class="text-end">{{ $recordRow->total }}</td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white border-0 pb-0">
-                                <h3 class="h5 mb-1">Errors and Retry Trail</h3>
-                                <p class="text-muted small mb-0">Structured AEAT failures are preserved per request for support and auditing.</p>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex flex-column gap-3">
-                                    @forelse ($selectedRequest->errors as $error)
-                                        <div class="border rounded-4 p-3">
-                                            <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
-                                                <div>
-                                                    <div class="fw-semibold">{{ $error->message }}</div>
-                                                    <div class="text-muted small">{{ $error->occurred_at?->format('d/m/Y H:i:s') ?: 'n/a' }} · stage {{ $error->stage }} · attempt {{ $error->attempt }}</div>
-                                                </div>
-                                                <div class="text-end">
-                                                    @if ($error->code)
-                                                        <div class="badge text-bg-danger mb-1">{{ $error->code }}</div>
-                                                    @endif
-                                                    <div class="small text-muted">Retryable: {{ $error->retryable ? 'yes' : 'no' }}</div>
-                                                </div>
-                                            </div>
-                                            @if ($error->details)
-                                                <pre class="small bg-light border rounded-3 p-3 mb-0">{{ json_encode($error->details, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
-                                            @endif
-                                        </div>
-                                    @empty
-                                        <div class="text-muted small">No errors recorded for this request.</div>
-                                    @endforelse
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5">Select a request</h3>
-                                <p class="text-muted mb-0">Use the history table to inspect stored files, parsed record counts, and structured errors for a specific AEAT request.</p>
-                            </div>
-                        </div>
-                    @endif
+                <div x-ref="content">
+                    @include('aeat.fiscal-data.partials.request-panels')
                 </div>
             </div>
         </div>
     </div>
 </x-app-layout>
+
+
+
+

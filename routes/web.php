@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('aeat/fiscal-data')->name('aeat.fiscal-data.')->group(function () {
         Route::get('/', [AeatFiscalDataController::class, 'index'])->name('index');
+        Route::get('/request-panels', [AeatFiscalDataController::class, 'requestPanels'])->name('request-panels');
         Route::post('/certificate-profiles', [AeatFiscalDataController::class, 'storeCertificateProfile'])->name('certificate-profiles.store');
         Route::post('/requests', [AeatFiscalDataController::class, 'storeRequest'])->name('requests.store');
         Route::post('/requests/{aeatFiscalDataRequest}/pin', [AeatFiscalDataController::class, 'submitClavePin'])->name('requests.pin');

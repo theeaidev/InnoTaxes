@@ -212,6 +212,49 @@ class AeatFiscalDataModuleTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_authenticated_user_can_refresh_the_request_panels_without_a_full_page_reload(): void
+    {
+        $user = User::factory()->create();
+        $request = $user->aeatFiscalDataRequests()->create([
+            'status' => 'queued',
+            'stage' => 'queued',
+            'auth_method' => 'reference',
+            'taxpayer_nif' => '12345678Z',
+            'auth_nif' => '12345678Z',
+            'pdp' => true,
+            'domicile_status' => 'unknown',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('aeat.fiscal-data.request-panels', ['request' => $request->id]))
+            ->assertOk()
+            ->assertSee('Request History')
+            ->assertSee('Request Detail')
+            ->assertSee('data-has-active-requests="1"', false)
+            ->assertSee("Request #{$request->id} for {$request->taxpayer_nif}");
+    }
+
+    public function test_user_cannot_fetch_another_users_request_detail_through_the_request_panels_endpoint(): void
+    {
+        $owner = User::factory()->create();
+        $intruder = User::factory()->create();
+
+        $request = $owner->aeatFiscalDataRequests()->create([
+            'status' => 'failed',
+            'stage' => 'service_unavailable',
+            'auth_method' => 'certificate',
+            'taxpayer_nif' => '12345678Z',
+            'pdp' => true,
+            'domicile_status' => 'ratified',
+        ]);
+
+        $this->actingAs($intruder)
+            ->get(route('aeat.fiscal-data.request-panels', ['request' => $request->id]))
+            ->assertOk()
+            ->assertSee('Select a request')
+            ->assertDontSee("Request #{$request->id} for {$request->taxpayer_nif}");
+    }
+
     protected function makePkcs12Certificate(string $passphrase): string
     {
         $opensslConfig = 'C:\xampp\apache\conf\openssl.cnf';
@@ -243,6 +286,3 @@ class AeatFiscalDataModuleTest extends TestCase
         return $exported;
     }
 }
-
-
-
