@@ -447,3 +447,112 @@ body.landing-home {
 [x-cloak] {
     display: none !important;
 }
+
+.aeat-guide {
+    overflow: hidden;
+    border: 1px solid rgba(24, 63, 71, 0.1);
+    border-radius: 1.5rem;
+    background: #fff;
+}
+
+.aeat-guide__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    list-style: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, rgba(88, 199, 194, 0.22), rgba(235, 168, 77, 0.16));
+}
+
+.aeat-guide__summary::-webkit-details-marker {
+    display: none;
+}
+
+.aeat-guide__title {
+    color: var(--brand-ink);
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.aeat-guide__chevron {
+    width: 0.85rem;
+    height: 0.85rem;
+    border-right: 2px solid #4b4db7;
+    border-bottom: 2px solid #4b4db7;
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+}
+
+.aeat-guide[open] .aeat-guide__chevron {
+    transform: rotate(225deg);
+}
+
+.aeat-guide__body {
+    padding: 1.25rem;
+    color: var(--brand-ink);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 251, 0.98)), #fff;
+}
+
+.aeat-guide__lead {
+    max-width: 72rem;
+    margin-bottom: 1.25rem;
+    color: var(--brand-ink);
+    font-size: 0.98rem;
+    line-height: 1.65;
+}
+
+.aeat-guide__panel {
+    height: 100%;
+    padding: 1rem;
+    border: 1px solid rgba(24, 63, 71, 0.1);
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 10px 24px rgba(24, 63, 71, 0.05);
+}
+
+.aeat-guide__panel h3 {
+    color: var(--brand-ink);
+}
+
+.aeat-guide__panel p {
+    color: var(--brand-slate);
+    line-height: 1.6;
+}
+
+.aeat-guide__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.4rem;
+    height: 2.4rem;
+    margin-bottom: 0.85rem;
+    padding: 0 0.7rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--brand-ink), #295861);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.aeat-guide__footer {
+    margin-top: 1.25rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(88, 199, 194, 0.18);
+    border-radius: 1.25rem;
+    background: linear-gradient(135deg, rgba(88, 199, 194, 0.14), rgba(255, 255, 255, 0.95));
+    color: var(--brand-slate);
+    line-height: 1.65;
+}
+
+.aeat-guide__label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    color: var(--brand-ink);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}

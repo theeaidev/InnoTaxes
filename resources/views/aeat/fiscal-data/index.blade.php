@@ -27,12 +27,6 @@
                 </div>
             @endif
 
-            @if (app()->isLocal() && config('queue.default') !== 'sync')
-                <div class="alert alert-info shadow-sm mb-0">
-                    This environment processes AEAT requests in the background. After clicking <span class="fw-semibold">Queue request</span>, run <code>php artisan queue:work</code> to process pending jobs.
-                </div>
-            @endif
-
             @php
                 $aeatReleaseDate = config('aeat.release_date')
                     ? \Illuminate\Support\Carbon::parse(config('aeat.release_date'))->startOfDay()
@@ -43,6 +37,163 @@
                     AEAT has not opened fiscal-data downloads for exercise {{ config('aeat.exercise') }} yet. According to the official calendar, access starts on {{ $aeatReleaseDate->format('d/m/Y') }}. Ratification checks can still be recorded before that date.
                 </div>
             @endif
+
+            @once
+                <style>
+                    .aeat-guide {
+                        overflow: hidden;
+                        border: 1px solid rgba(24, 63, 71, 0.1);
+                        border-radius: 1.5rem;
+                        background: #fff;
+                    }
+
+                    .aeat-guide__summary {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 1rem;
+                        padding: 1.1rem 1.25rem;
+                        list-style: none;
+                        cursor: pointer;
+                        background: linear-gradient(135deg, rgba(88, 199, 194, 0.22), rgba(235, 168, 77, 0.16));
+                    }
+
+                    .aeat-guide__summary::-webkit-details-marker {
+                        display: none;
+                    }
+
+                    .aeat-guide__title {
+                        color: var(--brand-ink);
+                        font-weight: 700;
+                        font-size: 1.05rem;
+                    }
+
+                    .aeat-guide__chevron {
+                        width: 0.85rem;
+                        height: 0.85rem;
+                        border-right: 2px solid #4b4db7;
+                        border-bottom: 2px solid #4b4db7;
+                        transform: rotate(45deg);
+                        transition: transform 0.2s ease;
+                    }
+
+                    .aeat-guide[open] .aeat-guide__chevron {
+                        transform: rotate(225deg);
+                    }
+
+                    .aeat-guide__body {
+                        padding: 1.25rem;
+                        color: var(--brand-ink);
+                        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 251, 0.98)), #fff;
+                    }
+
+                    .aeat-guide__lead {
+                        max-width: 72rem;
+                        margin-bottom: 1.25rem;
+                        color: var(--brand-ink);
+                        font-size: 0.98rem;
+                        line-height: 1.65;
+                    }
+
+                    .aeat-guide__panel {
+                        height: 100%;
+                        padding: 1rem;
+                        border: 1px solid rgba(24, 63, 71, 0.1);
+                        border-radius: 1.25rem;
+                        background: rgba(255, 255, 255, 0.92);
+                        box-shadow: 0 10px 24px rgba(24, 63, 71, 0.05);
+                    }
+
+                    .aeat-guide__panel h3 {
+                        color: var(--brand-ink);
+                    }
+
+                    .aeat-guide__panel p {
+                        color: var(--brand-slate);
+                        line-height: 1.6;
+                    }
+
+                    .aeat-guide__badge {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        min-width: 2.4rem;
+                        height: 2.4rem;
+                        margin-bottom: 0.85rem;
+                        padding: 0 0.7rem;
+                        border-radius: 999px;
+                        background: linear-gradient(135deg, var(--brand-ink), #295861);
+                        color: #fff;
+                        font-size: 0.78rem;
+                        font-weight: 700;
+                        letter-spacing: 0.08em;
+                    }
+
+                    .aeat-guide__footer {
+                        margin-top: 1.25rem;
+                        padding: 1rem 1.1rem;
+                        border: 1px solid rgba(88, 199, 194, 0.18);
+                        border-radius: 1.25rem;
+                        background: linear-gradient(135deg, rgba(88, 199, 194, 0.14), rgba(255, 255, 255, 0.95));
+                        color: var(--brand-slate);
+                        line-height: 1.65;
+                    }
+
+                    .aeat-guide__label {
+                        display: inline-block;
+                        margin-bottom: 0.5rem;
+                        color: var(--brand-ink);
+                        font-size: 0.78rem;
+                        font-weight: 700;
+                        letter-spacing: 0.14em;
+                        text-transform: uppercase;
+                    }
+
+                    .request-detail-column {
+                        scroll-margin-top: 2rem;
+                    }
+                </style>
+            @endonce
+
+            <details class="aeat-guide shadow-sm">
+                <summary class="aeat-guide__summary">
+                    <span class="aeat-guide__title">How this AEAT Fiscal Data module works</span>
+                    <span class="aeat-guide__chevron" aria-hidden="true"></span>
+                </summary>
+
+                <div class="aeat-guide__body">
+                    <p class="aeat-guide__lead">This private module lets an authenticated user create traceable AEAT requests inside the app without replacing the normal app login. It stores request history, raw files, normalized records, errors, retries, and the status of each attempt in one place.</p>
+
+                    <div class="row g-3">
+                        <div class="col-lg-4">
+                            <article class="aeat-guide__panel">
+                                <div class="aeat-guide__badge">01</div>
+                                <h3 class="h6 mb-2">Supported access methods</h3>
+                                <p class="small mb-0">The workflow is prepared to request AEAT fiscal data with a certificate profile, Cl@ve PIN / Cl@ve Movil, or an AEAT reference number, always using the documented AEAT flows and the selected pdp value.</p>
+                            </article>
+                        </div>
+                        <div class="col-lg-4">
+                            <article class="aeat-guide__panel">
+                                <div class="aeat-guide__badge">02</div>
+                                <h3 class="h6 mb-2">What the module validates now</h3>
+                                <p class="small mb-0">Before downloading, the module checks whether the taxpayer has the fiscal domicile ratified when the documented AEAT flow allows that pre-check. That result is saved in the request history so you can see if the domicile is already ratified or still pending.</p>
+                            </article>
+                        </div>
+                        <div class="col-lg-4">
+                            <article class="aeat-guide__panel">
+                                <div class="aeat-guide__badge">03</div>
+                                <h3 class="h6 mb-2">What changes on 19 March</h3>
+                                <p class="small mb-0">Until {{ $aeatReleaseDate?->format('d/m/Y') ?? 'the official AEAT opening date' }}, this module can record requests and domicile-ratification checks, but AEAT has not opened the fiscal-data download service yet. Once AEAT opens the campaign, the same requests can continue into the actual fiscal-data download stage.</p>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div class="aeat-guide__footer">
+                        <span class="aeat-guide__label">Summary</span>
+                        <p class="small mb-0">The module is designed to support certificate, Cl@ve PIN, and reference-based access, while preserving a secure audit trail. Right now it already validates domicile ratification and request traceability, and from 19 March onward it is expected to proceed with the AEAT fiscal-data download when the external service becomes available.</p>
+                    </div>
+                </div>
+            </details>
 
             <div class="row g-4">
                 <div class="col-md-6 col-xl-3">
@@ -77,7 +228,7 @@
                                 <div class="col-12 d-flex justify-content-end"><button type="submit" class="btn btn-brand">Save profile</button></div>
                             </form>
 
-                            <hr class="my-4">
+                            <hr class="my-4" style="border-color: rgba(24, 63, 71, 0.12);">
 
                             <div class="table-responsive">
                                 <table class="table table-sm align-middle mb-0">
@@ -229,7 +380,7 @@
                                                 </td>
                                                 <td class="text-end">
                                                     <div class="d-flex justify-content-end gap-2 flex-wrap">
-                                                        <a href="{{ route('aeat.fiscal-data.index', ['request' => $aeatRequest->id]) }}" class="btn btn-sm btn-outline-brand">View</a>
+                                                        <a href="{{ route('aeat.fiscal-data.index', ['request' => $aeatRequest->id]) }}#request-detail-panel" class="btn btn-sm btn-outline-brand">View</a>
                                                         @if ($latestFile)
                                                             <a href="{{ route('aeat.fiscal-data.files.download', $latestFile) }}" class="btn btn-sm btn-outline-secondary">Raw file</a>
                                                         @endif
@@ -258,7 +409,7 @@
                     </div>
                 </div>
 
-                <div class="col-xl-4">
+                <div class="col-xl-4 request-detail-column" id="request-detail-panel">
                     @if ($selectedRequest)
                         <div class="card border-0 shadow-sm mb-4">
                             <div class="card-header bg-white border-0 pb-0">
@@ -384,6 +535,3 @@
         </div>
     </div>
 </x-app-layout>
-
-
-

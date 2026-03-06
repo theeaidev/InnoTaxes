@@ -118,10 +118,6 @@ class AeatFiscalDataController extends Controller
             ? 'Cl@ve Movil challenge created. Enter the SMS PIN to continue.'
             : 'AEAT request queued successfully.';
 
-        if (! $aeatRequest->isAwaitingPin() && app()->isLocal() && config('queue.default') !== 'sync') {
-            $statusMessage .= ' Run php artisan queue:work locally to process it.';
-        }
-
         return redirect()
             ->route('aeat.fiscal-data.index', ['request' => $aeatRequest->getKey()])
             ->with('status', $statusMessage);
@@ -136,9 +132,6 @@ class AeatFiscalDataController extends Controller
         $this->manager->submitClavePin($aeatFiscalDataRequest, $request->validated('pin'));
 
         $statusMessage = 'PIN accepted. The AEAT request is queued for processing.';
-        if (app()->isLocal() && config('queue.default') !== 'sync') {
-            $statusMessage .= ' Run php artisan queue:work locally to process it.';
-        }
 
         return redirect()
             ->route('aeat.fiscal-data.index', ['request' => $aeatFiscalDataRequest->getKey()])
@@ -154,9 +147,6 @@ class AeatFiscalDataController extends Controller
         $this->manager->retryRequest($aeatFiscalDataRequest);
 
         $statusMessage = 'AEAT request queued again.';
-        if (app()->isLocal() && config('queue.default') !== 'sync') {
-            $statusMessage .= ' Run php artisan queue:work locally to process it.';
-        }
 
         return redirect()
             ->route('aeat.fiscal-data.index', ['request' => $aeatFiscalDataRequest->getKey()])
