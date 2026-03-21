@@ -9,7 +9,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use JsonException;
 use Throwable;
 
 class AeatFiscalDataRequestProcessor
@@ -318,17 +317,20 @@ class AeatFiscalDataRequestProcessor
         $rows = [];
 
         foreach ($records as $record) {
+            $normalizedData = $this->sanitizeForJson($record['normalized_data'] ?? []);
+            $warnings = $this->sanitizeForJson($record['warnings'] ?? []);
+
             $rows[] = [
                 'aeat_fiscal_data_request_id' => $request->getKey(),
                 'aeat_fiscal_data_file_id' => $file->getKey(),
                 'line_number' => $record['line_number'],
-                'record_type' => $record['record_type'],
-                'record_code' => $record['record_code'],
-                'layout_key' => $record['layout_key'],
+                'record_type' => $this->sanitizeUtf8((string) $record['record_type']),
+                'record_code' => isset($record['record_code']) ? $this->sanitizeUtf8((string) $record['record_code']) : null,
+                'layout_key' => isset($record['layout_key']) ? $this->sanitizeUtf8((string) $record['layout_key']) : null,
                 'line_length' => $record['line_length'],
-                'raw_line' => $record['raw_line'],
-                'normalized_data' => json_encode($record['normalized_data'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-                'parse_warnings' => json_encode($record['warnings'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                'raw_line' => $this->sanitizeUtf8((string) $record['raw_line']),
+                'normalized_data' => json_encode($normalizedData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
+                'parse_warnings' => json_encode($warnings, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
@@ -418,24 +420,36 @@ class AeatFiscalDataRequestProcessor
      */
     protected function sanitizeUtf8(string $value): string
     {
-        try {
-            json_encode($value, JSON_THROW_ON_ERROR);
-
+        if ($value === '' || mb_check_encoding($value, 'UTF-8')) {
             return $value;
-        } catch (JsonException) {
-            $converted = @mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        }
 
-            if (is_string($converted) && $converted !== '') {
+        $detectedEncoding = mb_detect_encoding($value, ['Windows-1252', 'ISO-8859-1', 'ISO-8859-15'], true);
+        $candidateEncodings = array_values(array_unique(array_filter([
+            is_string($detectedEncoding) ? $detectedEncoding : null,
+            'Windows-1252',
+            'ISO-8859-1',
+            'ISO-8859-15',
+        ])));
+
+        foreach ($candidateEncodings as $encoding) {
+            $converted = @mb_convert_encoding($value, 'UTF-8', $encoding);
+
+            if (is_string($converted) && $converted !== '' && mb_check_encoding($converted, 'UTF-8')) {
                 return $converted;
             }
+        }
 
-            $clean = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+        foreach ($candidateEncodings as $encoding) {
+            $clean = @iconv($encoding, 'UTF-8//IGNORE', $value);
 
-            if (is_string($clean) && $clean !== '') {
+            if (is_string($clean) && $clean !== '' && mb_check_encoding($clean, 'UTF-8')) {
                 return $clean;
             }
-
-            return '[binary data removed]';
         }
+
+        $fallback = preg_replace('/[^\x09\x0A\x0D\x20-\x7E]/', '', $value);
+
+        return is_string($fallback) && $fallback !== '' ? $fallback : '[binary data removed]';
     }
 }

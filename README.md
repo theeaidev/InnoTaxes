@@ -72,6 +72,26 @@ What was added:
 Notes:
 - Certificates are stored encrypted at rest. Raw reference values are not stored; only the secure hash needed for the documented reference flow is retained inside encrypted request state.
 - This module does not automate or replace AEAT credential issuance or domicile-ratification screens when the PDF marks them as non-integrable.
+- Queue worker local command: `php artisan queue:work database --tries=1 --timeout=0`
+- Frontend dev server: `npm run dev` launches Vite only.
+- Full dev command: `composer dev` launches the app server, queue listener, logs, and Vite together.
+- Windows note: `composer dev` can fail because `php artisan pail` requires the `pcntl` extension. If that happens, run the pieces separately, for example `php artisan serve`, `php artisan queue:work database --tries=1 --timeout=0`, and `npm run dev`.
+
+## Notas de ejecucion local en Windows
+
+Ejecuta estos comandos en terminales separadas:
+- `php artisan serve`
+- `php artisan queue:work database --tries=1 --timeout=0`
+- `npm run dev`
+
+Que es imprescindible:
+- `php artisan serve` es imprescindible para abrir la app Laravel en local.
+- `php artisan queue:work database --tries=1 --timeout=0` es imprescindible cuando una funcionalidad depende de jobs en cola, como el procesamiento de solicitudes AEAT.
+- `npm run dev` es imprescindible solo si necesitas assets de Vite en modo desarrollo, hot reload o cambios de frontend aun no compilados.
+
+Configuracion minima para el flujo AEAT:
+- `php artisan serve`
+- `php artisan queue:work database --tries=1 --timeout=0`
 
 TODOs:
 - Confirm AEAT production credentials, queue worker, and TLS certificate material in each deployment environment.

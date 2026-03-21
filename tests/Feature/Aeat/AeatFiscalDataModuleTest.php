@@ -14,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+use ReflectionMethod;
 use Tests\TestCase;
 
 class AeatFiscalDataModuleTest extends TestCase
@@ -184,6 +185,66 @@ class AeatFiscalDataModuleTest extends TestCase
         $this->assertStringContainsString('19/03/2026', (string) $request->last_error_message);
     }
 
+    public function test_processor_sanitizes_non_utf8_records_before_persisting_them(): void
+    {
+        Storage::fake('local');
+        $request = User::factory()->create()->aeatFiscalDataRequests()->create([
+            'status' => 'processing',
+            'stage' => 'parsing',
+            'auth_method' => 'certificate',
+            'taxpayer_nif' => '12345678Z',
+            'pdp' => true,
+        ]);
+
+        $file = $request->files()->create([
+            'disk' => 'local',
+            'path' => 'private/aeat/files/'.$request->user_id.'/sample.txt',
+            'filename' => 'sample.txt',
+            'sha256' => hash('sha256', 'sample'),
+            'bytes' => 6,
+            'line_count' => 1,
+            'record_count' => 1,
+        ]);
+
+        $processor = new AeatFiscalDataRequestProcessor(
+            $this->createMock(AeatHttpClient::class),
+            $this->createMock(AeatFiscalDataParser::class),
+        );
+
+        $records = [[
+            'line_number' => 8,
+            'record_type' => '2',
+            'record_code' => 'CB00001',
+            'layout_key' => 'cb_rdto_cuentas_bancarias',
+            'line_length' => 123,
+            'raw_line' => "2CB00001W0037986GING BANK NV SUCURSAL EN ESPA".hex2bin('D1')."A",
+            'normalized_data' => [
+                'sheet' => "Subvenci".hex2bin('F3')."n",
+                'fields' => [
+                    'nombre' => [
+                        'raw' => "Consejer".hex2bin('ED')."a",
+                        'value' => "Consejer".hex2bin('ED')."a",
+                    ],
+                ],
+                'variant' => null,
+            ],
+            'warnings' => [
+                "Resoluci".hex2bin('F3')."n incompleta",
+            ],
+        ]];
+
+        $method = new ReflectionMethod($processor, 'storeRecords');
+        $method->setAccessible(true);
+        $method->invoke($processor, $request, $file, $records);
+
+        $storedRecord = $request->records()->firstOrFail();
+
+        $this->assertStringContainsString('ESPAÑA', $storedRecord->raw_line);
+        $this->assertSame('Subvención', $storedRecord->normalized_data['sheet']);
+        $this->assertSame('Consejería', $storedRecord->normalized_data['fields']['nombre']['value']);
+        $this->assertSame('Resolución incompleta', $storedRecord->parse_warnings[0]);
+    }
+
     public function test_user_cannot_download_another_users_private_aeat_file(): void
     {
         $owner = User::factory()->create();
@@ -286,3 +347,4 @@ class AeatFiscalDataModuleTest extends TestCase
         return $exported;
     }
 }
+

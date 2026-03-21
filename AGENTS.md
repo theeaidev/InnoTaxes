@@ -141,6 +141,14 @@ Cuando haya conflicto entre el scaffold actual y el stack objetivo, no profundic
 - `npm run dev`
 - `npm run build`
 
+## Ejecucion local en Windows
+- Ejecutar en terminales separadas:
+- `php artisan serve`
+- `php artisan queue:work database --tries=1 --timeout=0`
+- `npm run dev`
+- Para el flujo AEAT, lo imprescindible es `php artisan serve` y `php artisan queue:work database --tries=1 --timeout=0`.
+- `composer dev` puede fallar en Windows porque incluye `php artisan pail` y `pail` requiere la extension `pcntl`.
+
 ## Nota sobre el mismatch actual
 Ahora mismo hay restos claros del scaffold inicial y una dependencia `livewire/livewire:^4.2`. Aun asi, la conviccion arquitectonica de este repositorio debe ser:
 

@@ -18,7 +18,7 @@ class AeatFiscalDataParser
      */
     public function parse(string $payload): array
     {
-        $lines = preg_split('/\r\n|\n|\r/', trim($payload));
+        $lines = preg_split('/\r\n|\n|\r/', $payload);
         $records = [];
         $summary = [
             'total_records' => 0,
@@ -116,7 +116,19 @@ class AeatFiscalDataParser
         ));
 
         usort($candidates, function (array $left, array $right): int {
-            return strlen((string) ($right['match']['value'] ?? '')) <=> strlen((string) ($left['match']['value'] ?? ''));
+            $lengthComparison = strlen((string) ($right['match']['value'] ?? '')) <=> strlen((string) ($left['match']['value'] ?? ''));
+            if ($lengthComparison !== 0) {
+                return $lengthComparison;
+            }
+
+            $priority = [
+                'exact' => 2,
+                'prefix' => 1,
+                'record_type_only' => 0,
+            ];
+
+            return ($priority[$right['match']['kind'] ?? 'record_type_only'] ?? 0)
+                <=> ($priority[$left['match']['kind'] ?? 'record_type_only'] ?? 0);
         });
 
         foreach ($candidates as $layout) {
@@ -126,20 +138,7 @@ class AeatFiscalDataParser
                 return $layout;
             }
 
-            $position = (int) ($match['position'] ?? 0);
-            $length = (int) ($match['length'] ?? 0);
-            if ($position <= 0 || $length <= 0) {
-                continue;
-            }
-
-            $value = substr($line, $position - 1, $length);
-            $expected = (string) ($match['value'] ?? '');
-
-            if ($kind === 'exact' && trim($value) === $expected) {
-                return $layout;
-            }
-
-            if ($kind === 'prefix' && str_starts_with(trim($value), $expected)) {
+            if ($this->matchesLayout($line, $match)) {
                 return $layout;
             }
         }
@@ -203,7 +202,8 @@ class AeatFiscalDataParser
         $selectorValue = $baseFields[$selectorKey]['value'] ?? null;
 
         foreach ($layout['variants'] as $variant) {
-            if ((string) ($variant['value'] ?? '') !== (string) $selectorValue) {
+            $variantValue = $this->resolveVariantSelectorValue($variant);
+            if ($variantValue === null || (string) $variantValue !== (string) $selectorValue) {
                 continue;
             }
 
@@ -216,7 +216,62 @@ class AeatFiscalDataParser
             ];
         }
 
-        $warnings[] = 'The record requires a variant definition that was not found.';
+        if ($selectorValue !== null && $selectorValue !== '') {
+            $warnings[] = 'The record requires a variant definition that was not found.';
+        }
+
+        return null;
+    }
+
+    /**
+     * Check whether the current line matches a layout rule.
+     *
+     * @param  array<string, mixed>  $match
+     */
+    protected function matchesLayout(string $line, array $match): bool
+    {
+        $kind = $match['kind'] ?? 'record_type_only';
+        $position = (int) ($match['position'] ?? 0);
+        $length = (int) ($match['length'] ?? 0);
+        $expected = trim((string) ($match['value'] ?? ''));
+
+        if ($kind === 'record_type_only') {
+            return true;
+        }
+
+        if ($position <= 0 || $length <= 0 || $expected === '') {
+            return false;
+        }
+
+        $window = trim((string) substr($line, $position - 1, $length));
+
+        return match ($kind) {
+            'exact' => $window === $expected
+                || trim((string) substr($line, $position - 1, strlen($expected))) === $expected,
+            'prefix' => str_starts_with($window, $expected),
+            default => false,
+        };
+    }
+
+    /**
+     * Resolve the selector value for a variant definition.
+     */
+    protected function resolveVariantSelectorValue(array $variant): ?string
+    {
+        $explicitValue = $variant['value'] ?? null;
+        if ($explicitValue !== null && trim((string) $explicitValue) !== '') {
+            return trim((string) $explicitValue);
+        }
+
+        $heading = trim((string) ($variant['heading'] ?? ''));
+        if ($heading !== '' && preg_match_all("/'([^']+)'/", $heading, $matches)) {
+            foreach (array_reverse($matches[1]) as $candidate) {
+                $candidate = trim((string) $candidate);
+                if ($candidate !== '') {
+                    return $candidate;
+                }
+            }
+        }
 
         return null;
     }

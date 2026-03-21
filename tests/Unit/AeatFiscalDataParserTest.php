@@ -36,4 +36,29 @@ class AeatFiscalDataParserTest extends TestCase
         $this->assertSame('2', $parsed['records'][0]['record_type']);
         $this->assertStringContainsString('No layout was found', $parsed['records'][0]['warnings'][0]);
     }
+
+    public function test_parser_prefers_the_specific_rta_layout_over_generic_rt_prefixes(): void
+    {
+        /** @var AeatFiscalDataParser $parser */
+        $parser = $this->app->make(AeatFiscalDataParser::class);
+
+        $parsed = $parser->parse('2RTA0001');
+
+        $this->assertSame('rta_rdto_trabajo_mod_190', $parsed['records'][0]['layout_key']);
+        $this->assertSame('RTA0001', $parsed['records'][0]['record_code']);
+        $this->assertSame('RTA - Rdto. trabajo mod 190', $parsed['records'][0]['normalized_data']['sheet']);
+    }
+
+    public function test_parser_infers_domestic_dom_variant_when_layout_value_is_missing(): void
+    {
+        /** @var AeatFiscalDataParser $parser */
+        $parser = $this->app->make(AeatFiscalDataParser::class);
+
+        $parsed = $parser->parse('2DOM0001 20');
+
+        $this->assertSame('dom_datos_del_domicilio', $parsed['records'][0]['layout_key']);
+        $this->assertSame([], $parsed['records'][0]['warnings']);
+        $this->assertSame('20', $parsed['records'][0]['normalized_data']['variant']['selector_value']);
+        $this->assertStringContainsString('territorio', (string) $parsed['records'][0]['normalized_data']['variant']['heading']);
+    }
 }
