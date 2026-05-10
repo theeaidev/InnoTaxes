@@ -97,3 +97,18 @@ TODOs:
 - Confirm AEAT production credentials, queue worker, and TLS certificate material in each deployment environment.
 - Add operations guidance for certificate rotation and log retention policy.
 - If the product later standardizes on Livewire 3 for the private shell, this module UI can be migrated incrementally from controller plus Blade to Livewire page components without changing the AEAT service/persistence layers.
+
+## AEAT Fiscal Calendar Module
+
+A private fiscal-calendar module is available under `/aeat/fiscal-calendar` inside the authenticated area of the application.
+
+What it adds:
+- Calendar profiles per NIF and exercise, so each taxpayer can have its own deadline set.
+- Seeded AEAT obligations for the most common recurring models, grouped by regime defaults and editable on creation.
+- Deadline generation with business-day shifting for weekends and optionally configured holidays.
+- A private dashboard with summary cards, due-soon and overdue alerts, and per-deadline status actions.
+- A semáforo de riesgo that marks each item as en plazo, próximo, vencido, aplazado, or completado.
+
+Notes:
+- The first version keeps the workflow server-driven and Blade-based, which matches the current codebase and avoids adding new frontend dependencies.
+- Holiday shifting can be expanded later by filling `config/aeat_calendar.php` with the relevant official dates for each exercise.

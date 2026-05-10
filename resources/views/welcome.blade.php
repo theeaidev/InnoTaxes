@@ -26,7 +26,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @auth
-                                <a href="{{ route('aeat.fiscal-data.index') }}" class="btn btn-brand">Open AEAT Fiscal Data</a>
+                                <a href="{{ route('aeat.fiscal-calendar.index') }}" class="btn btn-brand">Open Fiscal Calendar</a>
                             @else
                                 @if (Route::has('login'))
                                     <a href="{{ route('login') }}" class="btn btn-brand">Log in</a>

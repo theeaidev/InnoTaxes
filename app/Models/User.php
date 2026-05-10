@@ -62,4 +62,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(AeatFiscalDataRequest::class);
     }
+
+    /**
+     * Get the AEAT fiscal calendars owned by the user.
+     */
+    public function aeatFiscalCalendars(): HasMany
+    {
+        return $this->hasMany(AeatFiscalCalendar::class);
+    }
 }
