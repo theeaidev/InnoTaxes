@@ -318,13 +318,18 @@ class AeatFiscalDataModuleTest extends TestCase
 
     protected function makePkcs12Certificate(string $passphrase): string
     {
-        $opensslConfig = 'C:\xampp\apache\conf\openssl.cnf';
         $options = [
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
             'private_key_bits' => 2048,
             'digest_alg' => 'sha256',
-            'config' => $opensslConfig,
         ];
+
+        // En Windows (XAMPP) PHP no localiza openssl.cnf por sí solo; en el
+        // resto de sistemas se usa la configuración por defecto de OpenSSL.
+        $opensslConfig = 'C:\xampp\apache\conf\openssl.cnf';
+        if (is_file($opensslConfig)) {
+            $options['config'] = $opensslConfig;
+        }
 
         $privateKey = openssl_pkey_new($options);
         $this->assertNotFalse($privateKey);
